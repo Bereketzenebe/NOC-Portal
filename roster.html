@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOC Shift Roster | Safaricom</title>
+    <script>if (!sessionStorage.getItem('nocLoggedIn')) { window.location.replace('login.html'); }</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>tailwind.config = { theme: { extend: { colors: { safaricomGreen: '#00B050', safaricomRed: '#FF0000', safaricomDark: '#1E293B' } } } }</script>
+</head>
+<body class="bg-slate-900 font-sans text-slate-100 min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm text-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center font-bold text-2xl tracking-tight text-safaricomGreen">
+                <span class="text-safaricomRed text-3xl mr-1">●</span>Safaricom
+                <span class="text-safaricomDark font-normal ml-2 text-lg border-l pl-2 border-gray-300 hidden sm:inline">NOC Portal</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex flex-col items-end">
+                    <span id="userNameDisplay" class="text-xs font-bold text-slate-800">NOC Operator</span>
+                    <span id="roleBadge" class="text-[9px] bg-green-600 text-white px-1.5 py-0.5 rounded uppercase font-bold">Operator</span>
+                </div>
+                <button onclick="logout()" class="flex items-center gap-2 text-xs font-bold text-red-500 hover:text-red-700 transition-colors uppercase">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6 w-full flex-1">
+        <aside class="w-full lg:w-64 shrink-0">
+            <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible bg-slate-800 p-2 rounded-2xl border border-slate-700/50 gap-1 shadow-xl">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl whitespace-nowrap hover:bg-slate-700/50 hover:text-white transition-all"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+                <a href="roster.html" class="flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl whitespace-nowrap bg-safaricomGreen text-white shadow-md transition-all"><i class="fa-solid fa-calendar-days w-5 text-center text-white"></i> NOC Roster</a>
+                <a href="oncall.html" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl whitespace-nowrap hover:bg-slate-700/50 hover:text-white transition-all"><i class="fa-solid fa-phone-volume w-5 text-center"></i> L2 On-Call Team</a>
+                <a href="process.html" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl whitespace-nowrap hover:bg-slate-700/50 hover:text-white transition-all"><i class="fa-solid fa-book-open w-5 text-center"></i> NOC Process</a>
+                <a href="handover.html" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl whitespace-nowrap hover:bg-slate-700/50 hover:text-white transition-all"><i class="fa-solid fa-arrow-right-arrow-left w-5 text-center"></i> Shift Handover</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 space-y-6">
+            <!-- On-duty live banner -->
+            <div class="bg-slate-800/60 border border-slate-700/50 p-5 rounded-2xl shadow-xl">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <span class="text-[10px] font-bold text-safaricomGreen bg-emerald-950/50 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">● Live Active Shift</span>
+                        <h2 class="text-lg font-black text-white mt-1 tracking-tight">On-Duty Front Office Floor</h2>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold">Current Shift</p>
+                        <p id="currentShiftLabel" class="text-sm font-black text-safaricomGreen">—</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-safaricomGreen/20 border border-safaricomGreen/30 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-user-tie text-safaricomGreen text-sm"></i>
+                        </div>
+                        <div>
+                            <p id="onDutyName" class="text-base font-black text-white">Loading…</p>
+                            <p id="onDutyPhone" class="text-xs text-slate-400 font-mono mt-0.5"></p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold">Shift Hours</p>
+                        <p id="onDutyHours" class="text-xs text-slate-300 font-mono">—</p>
+                    </div>
+                </div>
+
+                <!-- NOC Communications -->
+                <div class="mt-4 bg-slate-900/40 border border-slate-700/30 rounded-xl p-4">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">NOC Communications</p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-phone text-safaricomGreen text-sm"></i>
+                            <span class="text-sm font-bold text-white">0933 896 248</span>
+                            <a href="tel:0933896248" class="ml-1 text-[10px] bg-safaricomGreen/20 text-safaricomGreen px-2 py-0.5 rounded-full font-bold hover:bg-safaricomGreen/30 transition-colors">Call</a>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-envelope text-safaricomGreen text-sm"></i>
+                            <span class="text-sm font-bold text-white">nocfo@safaricom.et</span>
+                            <a href="mailto:nocfo@safaricom.et" class="ml-1 text-[10px] bg-safaricomGreen/20 text-safaricomGreen px-2 py-0.5 rounded-full font-bold hover:bg-safaricomGreen/30 transition-colors">Email</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roster table -->
+            <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden shadow-xl">
+                <div class="px-5 py-4 border-b border-slate-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Operational Rotation Ledger</h3>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <input type="text" id="filterName" oninput="filterRosterTable()" placeholder="Filter by name…"
+                            class="flex-1 sm:w-44 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-safaricomGreen">
+                        <select id="filterShift" onchange="filterRosterTable()"
+                            class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-safaricomGreen">
+                            <option value="all">All Shifts</option>
+                            <option value="morning">Morning</option>
+                            <option value="evening">Afternoon</option>
+                            <option value="night">Night</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead class="text-slate-500 border-b border-slate-700 bg-slate-800/60">
+                            <tr>
+                                <th class="px-5 py-3 font-bold uppercase tracking-wider">Date</th>
+                                <th class="px-5 py-3 font-bold uppercase tracking-wider">Morning (06:00–14:00)</th>
+                                <th class="px-5 py-3 font-bold uppercase tracking-wider">Afternoon (14:00–22:00)</th>
+                                <th class="px-5 py-3 font-bold uppercase tracking-wider">Night (22:00–06:00)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rosterTableBody" class="divide-y divide-slate-700/30"></tbody>
+                    </table>
+                </div>
+                <div class="px-5 py-3 border-t border-slate-700/60 text-center">
+                    <button id="showMoreBtn" onclick="toggleRows()"
+                        class="px-5 py-2 bg-safaricomGreen hover:bg-emerald-600 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
+                        Show More
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ─── Auth ─────────────────────────────────────────────────────────────────
+        function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+
+        // ─── Safe HTML escape ────────────────────────────────────────────────────
+        function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+        let allData      = [];
+        let filteredData = [];
+        let expanded     = false;
+
+        // Hardcoded months — avoids toLocaleString locale differences
+        const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        function getCurrentShift() {
+            const h = new Date().getHours();
+            if (h >= 6  && h < 14) return { label: 'Morning',   hours: '06:00 – 14:00', col: 'Morning',  phoneCol: 'MorningPhone' };
+            if (h >= 14 && h < 22) return { label: 'Afternoon', hours: '14:00 – 22:00', col: 'Evening',  phoneCol: 'EveningPhone' };
+            return                          { label: 'Night',    hours: '22:00 – 06:00', col: 'Night',    phoneCol: 'NightPhone' };
+        }
+
+        function getTodayDateKey() {
+            const now = new Date();
+            return `${now.getDate()}-${MONTHS[now.getMonth()]}`;
+        }
+
+        function updateOnDutyBanner() {
+            const shift    = getCurrentShift();
+            const todayKey = getTodayDateKey();
+            const todayRow = allData.find(r => r.Date && r.Date.trim() === todayKey);
+
+            document.getElementById('currentShiftLabel').textContent = `${shift.label} Shift`;
+            document.getElementById('onDutyHours').textContent = shift.hours;
+
+            if (todayRow) {
+                const name  = (todayRow[shift.col]      || '').trim() || 'Not assigned';
+                const phone = (todayRow[shift.phoneCol] || '').trim();
+                document.getElementById('onDutyName').textContent  = name;
+                document.getElementById('onDutyPhone').textContent = phone ? `📞 ${phone}` : '';
+            } else {
+                document.getElementById('onDutyName').textContent  = `No entry for today (${todayKey})`;
+                document.getElementById('onDutyPhone').textContent = '';
+            }
+        }
+
+        function isToday(dateStr) {
+            return !!(dateStr && dateStr.trim() === getTodayDateKey());
+        }
+
+        function renderTable() {
+            const todayKey = getTodayDateKey();
+            const startIdx = filteredData.findIndex(r => r.Date && r.Date.trim() === todayKey);
+            const from     = startIdx !== -1 ? startIdx : 0;
+            const display  = expanded ? filteredData : filteredData.slice(from, from + 7);
+
+            if (filteredData.length === 0) {
+                document.getElementById('rosterTableBody').innerHTML =
+                    '<tr><td colspan="4" class="px-5 py-8 text-center text-slate-500">No roster entries match the filter.</td></tr>';
+                return;
+            }
+
+            document.getElementById('rosterTableBody').innerHTML = display.map(r => {
+                const highlight = isToday(r.Date) ? 'bg-emerald-950/30 border-l-2 border-l-safaricomGreen' : '';
+                return `
+                <tr class="hover:bg-slate-800/30 transition-colors ${highlight}">
+                    <td class="px-5 py-4 text-white font-mono font-bold whitespace-nowrap">
+                        ${r.Date}
+                        ${isToday(r.Date) ? '<span class="ml-2 text-[9px] bg-safaricomGreen text-white px-1.5 py-0.5 rounded-full uppercase font-bold">Today</span>' : ''}
+                    </td>
+                    <td class="px-5 py-4">
+                        <span class="text-safaricomGreen font-bold">${r.Morning || '—'}</span>
+                        ${r.MorningPhone ? `<br><span class="text-[10px] text-slate-400 font-mono">${r.MorningPhone}</span>` : ''}
+                    </td>
+                    <td class="px-5 py-4">
+                        <span class="text-slate-200">${r.Evening || '—'}</span>
+                        ${r.EveningPhone ? `<br><span class="text-[10px] text-slate-400 font-mono">${r.EveningPhone}</span>` : ''}
+                    </td>
+                    <td class="px-5 py-4">
+                        <span class="text-slate-200">${r.Night || '—'}</span>
+                        ${r.NightPhone ? `<br><span class="text-[10px] text-slate-400 font-mono">${r.NightPhone}</span>` : ''}
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function filterRosterTable() {
+            const nameQ  = document.getElementById('filterName').value.toLowerCase();
+            const shiftQ = document.getElementById('filterShift').value;
+            filteredData = allData.filter(r => {
+                const allNames  = [r.Morning, r.Evening, r.Night].join(' ').toLowerCase();
+                const nameMatch = !nameQ || allNames.includes(nameQ);
+                let   shiftMatch = true;
+                if (shiftQ === 'morning') shiftMatch = !!(r.Morning && r.Morning.trim());
+                if (shiftQ === 'evening') shiftMatch = !!(r.Evening && r.Evening.trim());
+                if (shiftQ === 'night')   shiftMatch = !!(r.Night   && r.Night.trim());
+                return nameMatch && shiftMatch;
+            });
+            renderTable();
+        }
+
+        function toggleRows() {
+            expanded = !expanded;
+            document.getElementById('showMoreBtn').textContent = expanded ? 'Show Less' : 'Show More';
+            renderTable();
+        }
+
+        // ─── Initialise: server-injected data first, then AJAX fallback ──────────
+        async function initRoster() {
+            const injected = window.__ROSTER_DATA__;
+            if (Array.isArray(injected) && injected.length > 0) {
+                allData = injected; filteredData = [...allData];
+                updateOnDutyBanner(); renderTable(); return;
+            }
+            try {
+                const res = await fetch('/api/roster');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                allData      = Array.isArray(data.roster) ? data.roster : [];
+                filteredData = [...allData];
+                updateOnDutyBanner();
+                renderTable();
+            } catch (err) {
+                console.error('Roster fetch error:', err);
+                document.getElementById('onDutyName').textContent = 'Unable to load roster';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const name = sessionStorage.getItem('nocDisplayName') || 'User';
+            const role = sessionStorage.getItem('nocUserRole') || 'guest';
+            document.getElementById('userNameDisplay').textContent = name;
+            const badge = document.getElementById('roleBadge');
+            badge.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+            badge.className = 'text-[9px] px-1.5 py-0.5 rounded uppercase font-bold ' + (
+                role === 'admin' ? 'bg-slate-700 text-white' :
+                role === 'operator' ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'
+            );
+            initRoster();
+            setInterval(updateOnDutyBanner, 60000);
+        });
+    </script>
+</body>
+</html>

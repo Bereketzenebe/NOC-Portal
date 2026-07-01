@@ -1,0 +1,12 @@
+Domain,DomainCode,Icon,Color,Tier,Name,Phone,Email
+Radio Access Network (RAN),RAN,tower-cell,green,Primary L2,Tewodros Mulugeta,+251 915 123 456,t.mulugeta@safaricom.et
+Radio Access Network (RAN),RAN,tower-cell,green,Secondary Cover,Elena Gebre,+251 920 234 567,e.gebre@safaricom.et
+Power & Facility Systems,PWR,charging-station,amber,Primary L2,Kebede Assefa,+251 912 345 678,k.assefa@safaricom.et
+Power & Facility Systems,PWR,charging-station,amber,Secondary Cover,Hiwot Bekele,+251 918 456 789,h.bekele@safaricom.et
+Transmission & Backhaul,TX,route,sky,IP/MPLS Layer,Dawit Tesfaye,+251 910 567 890,d.tesfaye@safaricom.et
+Transmission & Backhaul,TX,route,sky,DWDM Optics,Ephrem Hailu,+251 911 678 901,e.hailu@safaricom.et
+Transmission & Backhaul,TX,route,sky,Microwave Hop,Solomon Kassa,+251 914 789 012,s.kassa@safaricom.et
+Packet Switched (PS) Core,PS,network-wired,purple,Primary L2,Amina Omar,+251 922 890 123,amina.omar@safaricom.et
+Packet Switched (PS) Core,PS,network-wired,purple,Secondary Cover,Rahel Yonas,+251 916 901 234,r.yonas@safaricom.et
+Circuit Switched (CS) Core,CS,diagram-predecessor,red,Primary L2,Yonas Alemu,+251 930 012 345,y.alemu@safaricom.et
+Circuit Switched (CS) Core,CS,diagram-predecessor,red,Secondary Cover,Meron Tadesse,+251 917 123 456,m.tadesse@safaricom.et

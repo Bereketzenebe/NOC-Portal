@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOC Standard Operating Procedures | Safaricom</title>
+    <script>if (!sessionStorage.getItem('nocLoggedIn')) { window.location.replace('login.html'); }</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>tailwind.config = { theme: { extend: { colors: { safaricomGreen: '#00B050', safaricomRed: '#FF0000', safaricomDark: '#1E293B' } } } }</script>
+</head>
+<body class="bg-slate-900 font-sans text-slate-100 min-h-screen flex flex-col">
+
+    <!-- PDF Viewer Modal (same-tab, inline) -->
+    <div id="pdfModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/90 backdrop-blur-sm p-3 sm:p-6" style="display:none;">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl flex flex-col shadow-2xl" style="height:90vh;">
+            <div class="flex items-center justify-between p-4 border-b border-slate-700 shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <i class="fa-solid fa-file-pdf text-red-400 shrink-0"></i>
+                    <span id="pdfModalTitle" class="text-sm font-bold text-white truncate">Document Viewer</span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 ml-3">
+                    <a id="pdfDownloadBtn" href="#" download
+                        class="flex items-center gap-1.5 px-3 py-1.5 bg-safaricomGreen hover:bg-emerald-600 text-white text-xs font-bold rounded-lg transition-colors">
+                        <i class="fa-solid fa-download"></i> Download
+                    </a>
+                    <button onclick="closePdfModal()"
+                        class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <iframe id="pdfFrame" src="" class="flex-1 w-full rounded-b-2xl bg-white"></iframe>
+        </div>
+    </div>
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm text-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center font-bold text-2xl tracking-tight text-safaricomGreen">
+                <span class="text-safaricomRed text-3xl mr-1">●</span>Safaricom
+                <span class="text-safaricomDark font-normal ml-2 text-lg border-l pl-2 border-gray-300 hidden sm:inline">NOC Portal</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex flex-col items-end">
+                    <span id="userNameDisplay" class="text-xs font-bold text-slate-800">NOC Operator</span>
+                    <span id="roleBadge" class="text-[9px] bg-green-600 text-white px-1.5 py-0.5 rounded uppercase font-bold">Operator</span>
+                </div>
+                <button onclick="logout()" class="flex items-center gap-2 text-xs font-bold text-red-500 hover:text-red-700 transition-colors uppercase">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6 w-full flex-1">
+        <aside class="w-full lg:w-64 shrink-0">
+            <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible bg-slate-800 p-2 rounded-2xl border border-slate-700/50 gap-1 shadow-xl">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl whitespace-nowrap hover:bg-slate-700/50 hover:text-white transition-all"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+                <a href="roster.html" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl whitespace-nowrap hover:bg-slate-700/50 hover:text-white transition-all"><i class="fa-solid fa-calendar-days w-5 text-center"></i> NOC Roster</a>
+                <a href="oncall.html" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl whitespace-nowrap hover:bg-slate-700/50 hover:text-white transition-all"><i class="fa-solid fa-phone-volume w-5 text-center"></i> L2 On-Call Team</a>
+                <a href="process.html" class="flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl whitespace-nowrap bg-safaricomGreen text-white shadow-md transition-all"><i class="fa-solid fa-book-open w-5 text-center text-white"></i> NOC Process</a>
+                <a href="handover.html" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl whitespace-nowrap hover:bg-slate-700/50 hover:text-white transition-all"><i class="fa-solid fa-arrow-right-arrow-left w-5 text-center"></i> Shift Handover</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 space-y-6">
+            <div class="bg-slate-800/60 border border-slate-700/50 p-4 rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-base font-black text-white tracking-tight">NOC Standard Operating Procedures (SOP)</h2>
+                    <p class="text-xs text-slate-400 font-medium">Official procedural workflows, compliance documentation and reference manuals — from process_docs.csv</p>
+                </div>
+                <div class="w-full sm:w-72 relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input type="text" id="processSearch" oninput="filterProcessCards()" placeholder="Search SOP title or keyword…"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-safaricomGreen">
+                </div>
+            </div>
+
+            <div id="loadingState" class="text-center py-12 text-slate-500 text-sm">
+                <i class="fa-solid fa-circle-notch fa-spin text-safaricomGreen text-2xl mb-3 block"></i>
+                Loading SOP documents…
+            </div>
+            <div id="processGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 hidden"></div>
+            <div id="noResults" class="hidden text-center py-12 text-slate-500">
+                <i class="fa-solid fa-search text-2xl mb-3 block"></i> No SOPs match your search.
+            </div>
+
+            <!-- Guest notice -->
+            <div id="guestNotice" class="hidden bg-amber-950/30 border border-amber-700/30 rounded-xl p-3 flex items-center gap-2">
+                <i class="fa-solid fa-lock text-amber-400 text-sm shrink-0"></i>
+                <p class="text-xs text-amber-400">Download is restricted for Guest accounts. Contact your NOC Administrator to upgrade access.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ─── Auth ─────────────────────────────────────────────────────────────────
+        function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+
+        // ─── Safe HTML escape ────────────────────────────────────────────────────
+        function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+        // ─── PDF Modal ────────────────────────────────────────────────────────────
+        function openPdfModal(filename, title) {
+            const url = 'docs/' + filename;
+            document.getElementById('pdfFrame').src = url;
+            document.getElementById('pdfModalTitle').textContent = title;
+            document.getElementById('pdfDownloadBtn').href = url;
+            document.getElementById('pdfDownloadBtn').setAttribute('download', filename);
+            const modal = document.getElementById('pdfModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePdfModal() {
+            document.getElementById('pdfFrame').src = '';
+            document.getElementById('pdfModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('pdfModal').addEventListener('click', function(e) {
+            if (e.target === this) closePdfModal();
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closePdfModal(); });
+
+        // ─── Color map ────────────────────────────────────────────────────────────
+        const PROC_COLOR = {
+            red:    { icon: 'text-red-400',     dot: 'bg-red-500' },
+            amber:  { icon: 'text-amber-500',   dot: 'bg-amber-500' },
+            sky:    { icon: 'text-sky-400',     dot: 'bg-sky-400' },
+            purple: { icon: 'text-purple-400',  dot: 'bg-purple-400' },
+            emerald:{ icon: 'text-emerald-400', dot: 'bg-emerald-400' },
+            blue:   { icon: 'text-blue-400',    dot: 'bg-blue-400' },
+        };
+
+        // ─── Build process cards from CSV data ────────────────────────────────────
+        function buildProcessCards(data) {
+            const role       = sessionStorage.getItem('nocUserRole') || 'guest';
+            const canDownload = role !== 'guest';
+
+            return data.map(doc => {
+                const c    = PROC_COLOR[doc.Color] || PROC_COLOR.red;
+                const dlBtn = canDownload
+                    ? `<a href="docs/${doc.Filename}" download="${doc.Filename}"
+                            class="flex items-center justify-center gap-1.5 bg-safaricomGreen hover:bg-emerald-600 text-white font-bold text-[11px] py-2.5 rounded-xl transition-all shadow-sm">
+                            <i class="fa-solid fa-download"></i> Download
+                        </a>`
+                    : `<button disabled title="Guest accounts cannot download"
+                            class="flex items-center justify-center gap-1.5 bg-slate-800 text-slate-600 font-bold text-[11px] py-2.5 rounded-xl cursor-not-allowed border border-slate-700">
+                            <i class="fa-solid fa-lock text-xs"></i> Download
+                        </button>`;
+
+                return `
+                <div class="process-card bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden shadow-xl flex flex-col">
+                    <div class="bg-slate-800 px-5 py-3 border-b border-slate-700/60 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-${doc.Icon} ${c.icon} text-sm"></i>
+                            <h3 class="text-xs font-bold text-white uppercase tracking-wider process-title">${doc.Title}</h3>
+                        </div>
+                        <span class="text-[9px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded">${doc.SopCode}</span>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between gap-4">
+                        <p class="text-xs text-slate-400 leading-relaxed process-desc">${doc.Description}</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="openPdfModal('${doc.Filename}', '${doc.SopCode}: ${doc.Title}')"
+                                class="flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-white font-bold text-[11px] py-2.5 rounded-xl transition-all shadow-sm">
+                                <i class="fa-solid fa-eye text-slate-300"></i> View PDF
+                            </button>
+                            ${dlBtn}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterProcessCards() {
+            const q     = document.getElementById('processSearch').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.process-card');
+            let visible = 0;
+            cards.forEach(card => {
+                const title = card.querySelector('.process-title').textContent.toLowerCase();
+                const desc  = card.querySelector('.process-desc').textContent.toLowerCase();
+                const match = !q || title.includes(q) || desc.includes(q);
+                card.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            document.getElementById('noResults').classList.toggle('hidden', visible > 0);
+        }
+
+        // ─── Initialise from server-injected data or AJAX fallback ────────────────
+        async function initProcess() {
+            const injected = window.__PROCESS_DATA__;
+            if (Array.isArray(injected) && injected.length > 0) {
+                render(injected); return;
+            }
+            try {
+                const res = await fetch('/api/process-docs');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const json = await res.json();
+                render(Array.isArray(json.docs) ? json.docs : []);
+            } catch (err) {
+                console.error('Process docs fetch error:', err);
+                document.getElementById('loadingState').innerHTML =
+                    '<i class="fa-solid fa-circle-exclamation text-red-400 text-2xl mb-2 block"></i><span class="text-red-400">Could not load SOP list.</span>';
+            }
+        }
+
+        function render(data) {
+            document.getElementById('loadingState').classList.add('hidden');
+            const grid = document.getElementById('processGrid');
+            grid.innerHTML = buildProcessCards(data);
+            grid.classList.remove('hidden');
+
+            const role = sessionStorage.getItem('nocUserRole') || 'guest';
+            if (role === 'guest') document.getElementById('guestNotice').classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const name = sessionStorage.getItem('nocDisplayName') || 'User';
+            const role = sessionStorage.getItem('nocUserRole') || 'guest';
+            document.getElementById('userNameDisplay').textContent = name;
+            const badge = document.getElementById('roleBadge');
+            badge.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+            badge.className = 'text-[9px] px-1.5 py-0.5 rounded uppercase font-bold ' + (
+                role === 'admin' ? 'bg-slate-700 text-white' :
+                role === 'operator' ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'
+            );
+            initProcess();
+        });
+    </script>
+</body>
+</html>

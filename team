@@ -43,7 +43,7 @@
         <main class="flex-1 space-y-6">
             <div class="bg-slate-800/60 border border-slate-700/50 p-4 rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-base font-black text-white tracking-tight">L2 On-call team</h2>
+                    <h2 class="text-base font-black text-white tracking-tight">L2 On-call team roster</h2>
                     <p class="text-xs text-slate-400 font-medium">Real-time functional contact points for active incident triage — loaded from oncall.csv</p>
                 </div>
                 <div class="w-full sm:w-72 relative">

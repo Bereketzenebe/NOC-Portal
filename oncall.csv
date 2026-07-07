@@ -1,8 +1,8 @@
 Domain,DomainCode,Icon,Color,Tier,Name,Phone,Email
 Radio Access Network (RAN),RAN,tower-cell,green,Primary L2,Dawit Tadele,+251 703298782,dawit.tadele@safaricom.et
 Radio Access Network (RAN),RAN,tower-cell,green,Secondary Cover,Elena Gebre,+251 920 234 567,e.gebre@safaricom.et
-Power & Facility Systems,PWR,charging-station,amber,Primary L2,Bisrat Awaye,+251 711606001,bisrat.awaye@safaricom.et
-Power & Facility Systems,PWR,charging-station,amber,Secondary Cover,Erkeselam Leulseged,+251 799004248,erkeselam.leulseged@safaricom.et
+Power,PWR,charging-station,amber,Primary L2,Bisrat Awaye,+251 711606001,bisrat.awaye@safaricom.et
+Power,PWR,charging-station,amber,Secondary Cover,Erkeselam Leulseged,+251 799004248,erkeselam.leulseged@safaricom.et
 Transmission,TX,route,sky,IP Layer,Tesfamariam Nigusse,+251 703516467,tesfamariam.nigusse@safaricom.et
 Transmission,TX,route,sky,DWDM ,Aschalew Tigabu,+251 704662305,e.hailu@safaricom.et
 Transmission,TX,route,sky,Microwave ,Amanuel Taye,+251 713551203,amanuel.taye@safaricom.et
